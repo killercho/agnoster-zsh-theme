@@ -52,8 +52,6 @@ LIGHTNING="\u26a1"
 GEAR="\u2699"
 
 # Git specific symbols:
-AHEAD="↑"
-BEHIND="↓"
 CHANGED_FILES_CHAR="●"
 STAGED_FILES_CHAR="✚"
 UNTRACKED_FILES_CHAR="..."
@@ -100,27 +98,45 @@ prompt_context() {
 # The same git functionality but with the added information:
 #  branch(behind↓ | ahead↑) changed_files✚  staged_files●  untracked...
 prompt_git_extended() {
-  local color ref
-  is_dirty() {
-    test -n "$(git status --porcelain --ignore-submodules)"
-  }
-  ref="$vcs_info_msg_0_"
-  if [[ -n "$ref" ]]; then
-    # Add the branch name and dirty color
-    if is_dirty; then
-      color=yellow
-    else
-      color=green
-    fi
-    if [[ "${ref/.../}" == "$ref" ]]; then
-      ref="$BRANCH $ref"
-    else
-      ref="$DETACHED ${ref/.../}"
-    fi
-    prompt_segment $color $PRIMARY_FG " $ref "
+  local ref dirty mode repo_path
 
-    # Add the file statistics as different segments
-    if is_dirty; then
+   if [[ "$(command git rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]]; then
+    repo_path=$(command git rev-parse --git-dir 2>/dev/null)
+    dirty=$(parse_git_dirty)
+    ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+      ref="◈ $(command git describe --exact-match --tags HEAD 2> /dev/null)" || \
+      ref="➦ $(command git rev-parse --short HEAD 2> /dev/null)"
+    if [[ -n $dirty ]]; then
+      prompt_segment yellow $PRIMARY_FG
+    else
+      prompt_segment green $PRIMARY_FG
+    fi
+
+    local ahead behind
+    ahead=$(command git log --oneline @{upstream}.. 2>/dev/null)
+    behind=$(command git log --oneline ..@{upstream} 2>/dev/null)
+    if [[ -n "$ahead" ]] && [[ -n "$behind" ]]; then
+      PL_BRANCH_CHAR=$'\u21c5'
+    elif [[ -n "$ahead" ]]; then
+      PL_BRANCH_CHAR=$'\u21b1'
+    elif [[ -n "$behind" ]]; then
+      PL_BRANCH_CHAR=$'\u21b0'
+    else 
+      PL_BRANCH_CHAR=$BRANCH
+    fi
+
+    if [[ -e "${repo_path}/BISECT_LOG" ]]; then
+      mode=" <B>"
+    elif [[ -e "${repo_path}/MERGE_HEAD" ]]; then
+      mode=" >M<"
+    elif [[ -e "${repo_path}/rebase" || -e "${repo_path}/rebase-apply" || -e "${repo_path}/rebase-merge" || -e "${repo_path}/../.dotest" ]]; then
+      mode=" >R>"
+    fi
+
+    print -n " ${${ref:gs/%/%%}/refs\/heads\//$PL_BRANCH_CHAR }${mode} "
+
+    # Add the statistics for the changed files.
+    if [[ -n $dirty ]]; then
       changed_files_count="$(git diff --name-only | wc -l)"
       staged_files_count="$(git diff --cached --name-only | wc -l)"
       untracked_files_count="$(git ls-files --others --exclude-standard | wc -l)"
@@ -137,7 +153,6 @@ prompt_git_extended() {
         prompt_segment gray white " ${untracked_files_count}${UNTRACKED_FILES_CHAR} "
       fi
     fi
-
   fi
 }
 
