@@ -30,7 +30,7 @@ typeset -aHg AGNOSTER_PROMPT_SEGMENTS=(
     prompt_time
     prompt_virtualenv
     prompt_dir
-    prompt_git
+    prompt_git_extended
     prompt_end
 )
 
@@ -50,6 +50,13 @@ DETACHED="\u27a6"
 CROSS="\u2718"
 LIGHTNING="\u26a1"
 GEAR="\u2699"
+
+# Git specific symbols:
+AHEAD="↑"
+BEHIND="↓"
+CHANGED_FILES_CHAR="●"
+STAGED_FILES_CHAR="✚"
+UNTRACKED_FILES_CHAR="..."
 
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
@@ -87,6 +94,50 @@ prompt_context() {
 
   if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
     prompt_segment $PRIMARY_FG default " %(!.%{%F{yellow}%}.)$user@%m "
+  fi
+}
+
+# The same git functionality but with the added information:
+#  branch(behind↓ | ahead↑) changed_files✚  staged_files●  untracked...
+prompt_git_extended() {
+  local color ref
+  is_dirty() {
+    test -n "$(git status --porcelain --ignore-submodules)"
+  }
+  ref="$vcs_info_msg_0_"
+  if [[ -n "$ref" ]]; then
+    # Add the branch name and dirty color
+    if is_dirty; then
+      color=yellow
+    else
+      color=green
+    fi
+    if [[ "${ref/.../}" == "$ref" ]]; then
+      ref="$BRANCH $ref"
+    else
+      ref="$DETACHED ${ref/.../}"
+    fi
+    prompt_segment $color $PRIMARY_FG " $ref "
+
+    # Add the file statistics as different segments
+    if is_dirty; then
+      changed_files_count="$(git diff --name-only | wc -l)"
+      staged_files_count="$(git diff --cached --name-only | wc -l)"
+      untracked_files_count="$(git ls-files --others --exclude-standard | wc -l)"
+
+      if [[ $staged_files_count -ne 0 ]]; then
+        prompt_segment gray green " ${staged_files_count}${STAGED_FILES_CHAR} "
+      fi
+
+      if [[ $changed_files_count -ne 0 ]]; then
+        prompt_segment gray red " ${changed_files_count}${CHANGED_FILES_CHAR} "
+      fi
+
+      if [[ $untracked_files_count -ne 0 ]]; then
+        prompt_segment gray white " ${untracked_files_count}${UNTRACKED_FILES_CHAR} "
+      fi
+    fi
+
   fi
 }
 
