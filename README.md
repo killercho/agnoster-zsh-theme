@@ -80,6 +80,7 @@ customize_agnoster() {
 
 ## Future Work
 
+Original:
 I don't want to clutter it up too much, but I am toying with the idea of adding RVM (ruby version) and n (node.js version) display.
 
 It's currently hideously slow, especially inside a git repo. I guess it's not overly so for comparable themes, but it bugs me, and I'd love to hear ideas about how to improve the performance.
@@ -87,3 +88,6 @@ It's currently hideously slow, especially inside a git repo. I guess it's not ov
 Would be nice for the code to be a bit more sane and re-usable. Something to easily append a section with a given FG/BG, and add the correct opening and closing.
 
 Also the dependency on a powerline-patched font is regrettable, but there's really no way to get that effect without it. Ideally there would be a way to check for compatibility, or maybe even fall back to one of the similar unicode glyphs.
+
+From me:
+I want to add a status for the branches - whether there is a difference between the upstream and the local branch in git.
