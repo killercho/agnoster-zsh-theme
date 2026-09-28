@@ -94,4 +94,4 @@ Would be nice for the code to be a bit more sane and re-usable. Something to eas
 Also the dependency on a powerline-patched font is regrettable, but there's really no way to get that effect without it. Ideally there would be a way to check for compatibility, or maybe even fall back to one of the similar unicode glyphs.
 
 From me:
-I want to add a status for the branches - whether there is a difference between the upstream and the local branch in git.
+Nothing more needs to be added!
