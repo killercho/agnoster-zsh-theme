@@ -31,6 +31,10 @@ To test if your terminal and font support it, check that all the necessary chara
 
 ![Screenshot](https://gist.githubusercontent.com/agnoster/3712874/raw/screenshot.png)
 
+- Additional status for the amount of git files being staged/modified/untracked
+
+![Screenshot_new](screenshot_new.png)
+
 ## Customize your prompt view
 
 By default prompt has these segments: `prompt_status`, `prompt_context`, `prompt_virtualenv`, `prompt_dir`, `prompt_git`, `prompt_end` in that particular order.
