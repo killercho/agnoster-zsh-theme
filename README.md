@@ -8,6 +8,8 @@ A ZSH theme optimized for people who use:
 
 For Mac users, I highly recommend iTerm 2 + Solarized Dark
 
+The theme is almost the same as the original but with a change that shows the amount of staged files, modified but not staged files and untracked files in an easy way into the prompt itself.
+
 # Compatibility
 
 **NOTE:** In all likelihood, you will need to install a [Powerline-patched font](https://github.com/Lokaltog/powerline-fonts) for this theme to render correctly.
