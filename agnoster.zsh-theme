@@ -27,6 +27,7 @@
 typeset -aHg AGNOSTER_PROMPT_SEGMENTS=(
     prompt_status
     prompt_context
+    prompt_time
     prompt_virtualenv
     prompt_dir
     prompt_git
@@ -131,6 +132,11 @@ prompt_status() {
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
 
   [[ -n "$symbols" ]] && prompt_segment $PRIMARY_FG default " $symbols "
+}
+
+# Adds the time to the prompt with the default foreground and background colors.
+prompt_time() {
+    prompt_segment black yellow " %D{%H:%M:%S} "
 }
 
 # Display current virtual environment
