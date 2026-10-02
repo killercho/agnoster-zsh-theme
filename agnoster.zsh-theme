@@ -139,7 +139,7 @@ prompt_git_extended() {
     if [[ -n $dirty ]]; then
       changed_files_count="$(git diff --name-only | wc -l)"
       staged_files_count="$(git diff --cached --name-only | wc -l)"
-      untracked_files_count="$(git ls-files --others --exclude-standard | wc -l)"
+      untracked_files_count="$(git ls-files $(git rev-parse --show-toplevel) --others --exclude-standard | wc -l)"
 
       if [[ $staged_files_count -ne 0 ]]; then
         prompt_segment gray green " ${staged_files_count}${STAGED_FILES_CHAR} "
